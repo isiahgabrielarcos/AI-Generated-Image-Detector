@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI-YAN</title>
+<style>
+  *{ box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+  body{
+    width: 340px;
+    color:#fff;
+    background: linear-gradient(165deg, #8b7bf2 0%, #7a6df0 50%, #49a7d6 135%);
+    padding: 14px;
+  }
+  .topbar{ display:flex; align-items:center; justify-content:center; position:relative; margin-bottom:14px; }
+  .close-x{
+    position:absolute; left:0; top:50%; transform:translateY(-50%);
+    width:24px; height:24px; border-radius:50%; border:none; cursor:pointer;
+    background:rgba(255,255,255,0.18); color:#fff; font-size:13px; line-height:1;
+  }
+  .brand{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:18px; }
+  .brand svg{ width:22px; height:22px; }
+  .btn{
+    width:100%; border:none; cursor:pointer; color:#fff; font-weight:700; font-size:14px;
+    background:rgba(255,255,255,0.16); border-radius:14px; padding:13px 14px; transition:.15s;
+  }
+  .btn:hover{ background:rgba(255,255,255,0.26); }
+  .dropzone{
+    width:100%; margin-top:12px; border:2px dashed rgba(255,255,255,0.45); border-radius:18px;
+    background:rgba(255,255,255,0.07); color:#f2efff; font-size:13px; font-weight:600;
+    padding:20px 14px; text-align:center; cursor:pointer; transition:.15s;
+  }
+  .dropzone.hover{ background:rgba(255,255,255,0.18); border-color:#fff; }
+  .toggle{ display:flex; gap:10px; margin-top:12px; }
+  .toggle .seg{
+    flex:1; border:none; cursor:pointer; color:#fff; font-weight:700; font-size:13px;
+    border-radius:14px; padding:11px; background:rgba(255,255,255,0.10); transition:.15s;
+  }
+  .toggle .seg.active{ background:rgba(255,255,255,0.30); }
+  .stage{
+    margin-top:12px; border-radius:16px; background:rgba(20,28,48,0.32);
+    min-height:150px; display:flex; align-items:center; justify-content:center;
+    overflow:hidden; position:relative;
+  }
+  .stage img{ max-width:100%; max-height:230px; object-fit:contain; display:none; }
+  .stage .ph svg{ width:58px; height:58px; opacity:.7; }
+  .spinner{
+    position:absolute; width:30px;height:30px;border-radius:50%;
+    border:3px solid rgba(255,255,255,0.3); border-top-color:#fff;
+    animation:spin 1s linear infinite; display:none;
+  }
+  .spinner.active{ display:block; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .verdict{
+    display:none; margin-top:10px; text-align:center; font-weight:800; font-size:14px;
+    padding:9px; border-radius:12px;
+  }
+  .verdict.show{ display:block; }
+  .verdict.real{ background:linear-gradient(135deg,#10b981,#34d399); }
+  .verdict.ai{ background:linear-gradient(135deg,#ef4444,#f97316); }
+  .footer{ margin-top:14px; text-align:center; }
+  .footer .line1{ font-size:12.5px; }
+  .footer .line1 a{ color:#bfe3ff; font-weight:700; text-decoration:underline; cursor:pointer; }
+  .footer .line2{ font-size:11.5px; font-style:italic; opacity:.85; margin-top:6px; }
+  .err{
+    display:none; margin-top:10px; background:rgba(0,0,0,0.28); border-radius:10px;
+    padding:9px 11px; font-size:12px; color:#ffe0e0;
+  }
+  .err.show{ display:block; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <button class="close-x" id="close-btn" title="Close">✕</button>
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 L21 20 H3 Z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="M9 20 l3-6 3 6" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+      AI-YAN
+    </div>
+  </div>
+
+  <button class="btn" id="dashboard-btn">Go to Dashboard</button>
+
+  <div class="dropzone" id="dropzone">Drop an image here ...</div>
+  <input type="file" id="file-input" accept="image/*" hidden />
+
+  <div class="toggle">
+    <button class="seg active" id="tab-original">Original</button>
+    <button class="seg" id="tab-heatmap">Heatmap</button>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="ph" id="placeholder">
+      <svg viewBox="0 0 24 24" fill="#fff"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 11l2.5 3 3.5-4.5L19 17H5z"/></svg>
+    </div>
+    <div class="spinner" id="spinner"></div>
+    <img id="img-original" alt="Original" />
+    <img id="img-heatmap" alt="Heatmap" />
+  </div>
+
+  <div class="verdict" id="verdict"></div>
+  <div class="err" id="err"></div>
+
+  <div class="footer">
+    <div class="line1">System had a wrong prediction? <a id="report-link">Report it here.</a></div>
+    <div class="line2">Right-click an image on a page to analyze it here.</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 360px;
+      min-height: 520px;
+      margin: 0;
+      padding: 14px;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .header { text-align: center; margin-bottom: 14px; }
+    .header h1 { margin: 0; font-size: 22px; }
+    .header p { margin: 4px 0 0; font-size: 12px; opacity: 0.9; }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    #file-upload {
+      width: 100%;
+      padding: 10px;
+      border: 2px dashed rgba(255,255,255,0.45);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      color: white;
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+
+    .buttons { display: flex; gap: 8px; margin-top: 10px; }
+    button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.16);
+      color: white;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .preview-wrap {
+      display: none;
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(0,0,0,0.25);
+      margin-top: 10px;
+    }
+    .preview-wrap.active { display: block; }
+    img { max-width: 100%; display: block; }
+    #heatmap-preview { display: none; }
+    .tabs { display: flex; gap: 8px; margin-top: 10px; }
+    .tab {
+      flex: 1;
+      padding: 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.1);
+      text-align: center;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .tab.active { background: rgba(255,255,255,0.3); }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 18px 0;
+    }
+    .loading.active { display: block; }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      margin: 0 auto 10px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .results { display: none; }
+    .results.active { display: block; }
+
+    .badge {
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .badge.real { background: linear-gradient(135deg, #11998e, #38ef7d); }
+    .badge.ai { background: linear-gradient(135deg, #eb3349, #f45c43); }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.07);
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .error {
+      display: none;
+      background: rgba(255, 60, 60, 0.2);
+      border: 1px solid rgba(255, 60, 60, 0.4);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 12px;
+    }
+    .error.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔍 AI Image Detector</h1>
+    <p>Popup → Overlay → Dashboard</p>
+  </div>
+
+  <div class="card">
+    <input type="file" id="file-upload" accept="image/*">
+    <div class="buttons">
+      <button id="open-overlay">Open Overlay</button>
+      <button id="open-dashboard">Dashboard</button>
+    </div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div>Analyzing image…</div>
+  </div>
+
+  <div class="card preview-wrap active" id="preview-section">
+    <div class="tabs">
+      <div class="tab active" id="tab-original">Original</div>
+      <div class="tab" id="tab-heatmap">Heatmap</div>
+    </div>
+    <img id="image-preview" alt="Preview">
+    <img id="heatmap-preview" alt="Heatmap">
+  </div>
+
+  <div class="card results" id="results-section">
+    <div id="prediction-display"></div>
+    <div class="metric"><span>Confidence</span><span id="confidence-value">—</span></div>
+    <div class="metric"><span>AI Probability</span><span id="ai-prob-value">—</span></div>
+    <div class="metric"><span>Real Probability</span><span id="real-prob-value">—</span></div>
+    <div class="metric"><span>Processing Time</span><span id="time-value">—</span></div>
+    <button id="analyze-another" style="width:100%;margin-top:8px">Analyze Another Image</button>
+  </div>
+
+  <div class="error" id="error-display"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

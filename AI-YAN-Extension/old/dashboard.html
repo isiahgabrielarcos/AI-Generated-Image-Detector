@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="img-src 'self' data: https:; script-src 'self'; style-src 'self' 'unsafe-inline';">
+  <title>AI Detector | Home</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">AI<span>DETECTOR</span></div>
+    <div class="status-badge">Overlay Connected</div>
+  </nav>
+
+  <main class="container">
+    <div class="grid">
+      <section class="card image-card">
+        <div class="card-header">Source Analysis</div>
+        <div class="debug-controls" style="margin-bottom: 10px; display:flex; gap:8px; flex-wrap:wrap;">
+          <button id="manual-upload-btn" class="btn-secondary">Manual Test Upload</button>
+          <button id="open-overlay-btn" class="btn-secondary">Open Overlay</button>
+          <input type="file" id="debug-file-input" accept="image/*" style="display: none;">
+        </div>
+        <div id="image-container" class="image-wrapper"></div>
+      </section>
+
+      <section class="card stats-card">
+        <div class="card-header">Detection Metrics</div>
+
+        <div class="metric-group">
+          <label>Binary Classification</label>
+          <div id="prediction-label" class="result-value">—</div>
+        </div>
+
+        <div class="metric-group">
+          <div class="flex-label">
+            <label>Confidence Score</label>
+            <span id="confidence-pct">—</span>
+          </div>
+          <div class="progress-bar">
+            <div id="progress-fill" class="fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="result-row"><span>AI Probability:</span><span id="probability-value">—</span></div>
+        <div class="result-row"><span>Real Probability:</span><span id="real-probability-value">—</span></div>
+
+        <div class="divider"></div>
+
+        <div class="metadata">
+          <div class="meta-item"><span class="meta-label">Model:</span><span class="meta-value" id="model-name">Hybrid Detector</span></div>
+          <div class="meta-item"><span class="meta-label">Processing Time:</span><span class="meta-value" id="processing-time">—</span></div>
+        </div>
+
+        <button class="btn-primary" id="export-report">Export Report</button>
+      </section>
+    </div>
+  </main>
+  <script src="dashboard.js" defer></script>
+</body>
+</html>

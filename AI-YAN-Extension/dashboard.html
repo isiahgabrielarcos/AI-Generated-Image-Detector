@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="img-src 'self' data: https:; script-src 'self'; style-src 'self' 'unsafe-inline';" />
+  <title>AI-YAN | Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 L21 20 H3 Z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="M9 20 l3-6 3 6" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+      <span>AI-YAN</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Row 1: source analysis + metrics/terms -->
+    <section class="row1">
+      <div class="card analysis">
+        <h3>Source Analysis</h3>
+        <div class="btn-row">
+          <button class="chip" id="btn-upload">Manual Test Upload</button>
+          <button class="chip" id="btn-overlay">Open Overlay</button>
+          <input type="file" id="file-input" accept="image/*" hidden />
+        </div>
+        <div class="seg-row">
+          <button class="seg active" id="tab-original">Original</button>
+          <button class="seg" id="tab-heatmap">Heatmap</button>
+        </div>
+        <div class="stage" id="stage">
+          <div class="ph" id="stage-ph"><svg viewBox="0 0 24 24" fill="#cbd5e1"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 11l2.5 3 3.5-4.5L19 17H5z"/></svg></div>
+          <div class="spinner" id="stage-spinner"></div>
+          <img id="img-original" alt="Original" />
+          <img id="img-heatmap" alt="Heatmap" />
+        </div>
+        <div class="report-note">System had a wrong prediction? <a id="report-link">Report it here.</a></div>
+      </div>
+
+      <div class="right-col">
+        <div class="card metrics">
+          <h3>Metrics</h3>
+          <div class="muted">Binary Classification</div>
+          <div class="verdict-badge real" id="badge">HUMAN-MADE</div>
+
+          <div class="conf-head"><span>Confidence Score</span><span id="conf-pct">—</span></div>
+          <div class="bar"><div class="bar-fill" id="conf-bar"></div></div>
+
+          <div class="proc-row"><span>Processing Time</span><span id="proc-time">—</span></div>
+
+          <button class="export" id="btn-export">Export Report</button>
+        </div>
+
+        <div class="card terms">
+          <h3>Terms of Service</h3>
+          <p class="muted">This model adheres to the following practices and ethical conduct:</p>
+          <p><strong>Data Privacy Notice:</strong> By using this tool, you acknowledge that you are uploading image binary data for analysis purposes only. We do not store, share, or retain your images or any personal information.</p>
+          <p><strong>User Agreement:</strong> This tool is designed for educational and research purposes to help identify AI-generated artwork. Please ensure you have proper rights to analyze the images you upload.</p>
+          <p><strong>Third Party Content Disclaimer:</strong> AI-YAN is not responsible for the content, legality, or accuracy of third-party images fetched from external websites. Any copyright marks, watermarks, or metadata remain the property of the original creator.</p>
+          <label class="agree" id="agree-box">
+            <input type="checkbox" id="agree" />
+            <span>I understand that I'm uploading image binary information for analysis and agree to use this tool responsibly.</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Row 2: model performance metrics + confusion matrix -->
+    <section class="card perf">
+      <div class="stat-strip">
+        <div class="stat ghost"></div>
+        <div class="stat"><div class="stat-label">PRECISION</div><div class="stat-val">95.1%</div></div>
+        <div class="stat"><div class="stat-label">RECALL</div><div class="stat-val">95.1%</div></div>
+        <div class="stat"><div class="stat-label">F1-SCORE</div><div class="stat-val">94.2%</div></div>
+        <div class="stat"><div class="stat-label">AUC</div><div class="stat-val">0.97</div></div>
+      </div>
+      <div class="confusion">
+        <div class="cm-cell"><div class="cm-label">TRUE NEGATIVE</div><div class="cm-val">14,265</div></div>
+        <div class="cm-cell"><div class="cm-label">FALSE POSITIVE</div><div class="cm-val">735</div></div>
+        <div class="cm-cell"><div class="cm-label">FALSE NEGATIVE</div><div class="cm-val">1,005</div></div>
+        <div class="cm-cell"><div class="cm-label">TRUE POSITIVE</div><div class="cm-val">14,730</div></div>
+      </div>
+    </section>
+
+    <!-- Row 3: model specs -->
+    <h2 class="section-title">Model Specifications</h2>
+    <section class="card specs">
+      <div class="spec-grid">
+        <div class="spec-block">
+          <div class="spec-h">Baseline Frameworks</div>
+          <ul>
+            <li>Man Q. &amp; Cho Y-I. (2026)</li>
+            <li>Liu, Z., Wang, H., Kang, Y., &amp; Wang, S. (2024)</li>
+            <li>Lađević, A., Kramberger, T., Kramberger, R., &amp; Vlahek, D. (2024)</li>
+            <li>Li, M., &amp; Stamp, M. (2025)</li>
+            <li>Wang, Y., Li, L., Ma, W., &amp; Zhang, Y. (2026)</li>
+          </ul>
+        </div>
+        <div class="spec-block">
+          <div class="spec-h">Training Datasets</div>
+          <ul class="two-col">
+            <li>WikiArt</li><li>ArtGAN</li>
+            <li>Stable Diffusion XL 1.0</li><li>NFTGAN</li>
+            <li>Playground v2.5</li><li>&nbsp;</li>
+            <li>Juggernaut XL</li><li>&nbsp;</li>
+            <li>DALL-E 3</li><li>&nbsp;</li>
+          </ul>
+        </div>
+        <div class="spec-block"><div class="spec-h">Backbone Model</div><ul><li>CLIP ViT-B/32</li></ul></div>
+        <div class="spec-block"><div class="spec-h">Detection Speed</div><ul><li>~120 - 180ms per image</li></ul></div>
+        <div class="spec-block"><div class="spec-h">Input Resolution</div><ul><li>224 × 224 pixels</li></ul></div>
+        <div class="spec-block"><div class="spec-h">Model Size</div><ul><li>500 mb</li></ul></div>
+      </div>
+    </section>
+
+    <!-- Row 4: feedback -->
+    <section class="card feedback">
+      <h3>Send Feedback</h3>
+      <form id="fb-form">
+        <div class="fb-grid">
+          <select id="fb-type" required>
+            <option value="">Select feedback type...</option>
+            <option value="suggestion">Suggestion</option>
+            <option value="concern">Concern</option>
+            <option value="bug">Bug Report</option>
+            <option value="other">Other</option>
+          </select>
+          <input type="email" id="fb-email" placeholder="your@email.com (optional)" />
+        </div>
+        <textarea id="fb-msg" rows="3" placeholder="Share your thoughts..." required></textarea>
+        <button type="submit" class="export">Submit Feedback</button>
+        <div id="fb-status" class="fb-status"></div>
+      </form>
+    </section>
+  </main>
+
+  <script src="dashboard.js" defer></script>
+</body>
+</html>
