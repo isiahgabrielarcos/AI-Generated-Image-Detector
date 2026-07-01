@@ -1,0 +1,2 @@
+epoch,train_loss,val_acc,val_ap,val_auc,val_f1,epoch_sec,elapsed_min,weights_changed_pct
+1,0.181462,0.426647,0.421368,0.381261,0.429210,238.2,3.97,0.1580

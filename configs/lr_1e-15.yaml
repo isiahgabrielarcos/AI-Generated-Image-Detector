@@ -1,0 +1,76 @@
+# ─────────────────────────────────────────────
+#  Man & Cho (2026) – AIGC Detector  config
+#  VARIANT: learning rate = 1e-15  (PANEL DEMONSTRATION)
+# ─────────────────────────────────────────────
+#  Purpose
+#  ───────
+#  This config is IDENTICAL to default.yaml except both learning rates are
+#  forced to 1e-15.  It exists to demonstrate empirically that training at
+#  this rate is practically impossible on float32 hardware.
+#
+#  Why it cannot work (float32 precision):
+#    • AdamW's per-parameter step is ~= lr in magnitude (the m/sqrt(v) term
+#      is normalised to ~O(1)), so each weight changes by ~1e-15 per step.
+#    • A float32 weight of magnitude ~0.1 has a spacing (ULP) of ~7.45e-9;
+#      a weight of ~1.0 has a ULP of ~1.19e-7 (= float32 machine epsilon).
+#    • 1e-15 is ~6-7 ORDERS OF MAGNITUDE below the smallest representable
+#      change.  Adding 1e-15 to a float32 weight is silently rounded away —
+#      the stored bits do not change at all.  The model never learns.
+#
+#  Run:
+#    python train.py --config configs/lr_1e-15.yaml
+#  Prove it without waiting for a full run:
+#    python lr_precision_demo.py
+# ─────────────────────────────────────────────
+
+model:
+  clip_model: "ViT-L-14-quickgelu"
+  feature_dim: 768
+  swin_window_size: 4
+  swin_depths: [2, 2, 6, 2]
+  swin_num_heads: [3, 6, 12, 24]
+  swin_embed_dim: 96
+  dropout: 0.3
+
+data:
+  image_size: 224
+  # LOW-RAM DEMO: train on ForenSynths ONLY.  The other two roots point at
+  # missing paths so their multi-GB CLIP caches are never loaded (~4.9 GB total
+  # instead of ~14.6 GB).  The model cannot learn at 1e-15 regardless of which
+  # data it sees, so one dataset is sufficient to show the flatline.
+  # To run the full-scale confirmatory version, restore all three real roots.
+  dfdc_root:        "datasets_eq/_skip_for_demo"
+  forensynths_root: "datasets_eq/ForenSynths"
+  genimage_root:    "datasets_eq/_skip_for_demo"
+  clip_cache_dir:   "datasets_eq/clip_cache"
+  # DEMO SPEEDUP: cap at ~10k total images (vs full ~30k) -> ~3x faster epochs.
+  # The model cannot learn at 1e-15 regardless of dataset size, so reduced data
+  # still proves the flatline; raise to null for a full-scale confirmatory run.
+  max_samples_per_dataset: 3340
+  train_split: 0.8
+  num_workers: 0
+  augmentation:
+    random_flip: true
+    random_crop: true
+    jpeg_compression: true
+
+training:
+  batch_size: 8
+  accumulation_steps: 4
+  epochs: 3                      # nothing will change; flatline is obvious by ep2-3
+  early_stop_patience: 15
+  cnn_lr: 1.0e-15                # << DEMONSTRATION: vanishing learning rate
+  backbone_lr: 1.0e-15          # << DEMONSTRATION: vanishing learning rate
+  weight_decay: 1.0e-4
+  focal_gamma: 2.0
+  scheduler: "cosine"
+  warmup_epochs: 5
+  gradient_clip: 1.0
+  use_amp: false
+  use_compile: false
+
+logging:
+  log_dir: "runs/"
+  save_dir: "checkpoints/lr_1e-15/"
+  save_every: 5
+  eval_every: 1

@@ -1,0 +1,2 @@
+epoch,train_loss,val_acc,val_auc,val_ap,weights_changed_pct
+1,0.174564,0.523952,0.556573,0.557465,0.1592

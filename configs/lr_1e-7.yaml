@@ -1,0 +1,66 @@
+# ─────────────────────────────────────────────
+#  Man & Cho (2026) – AIGC Detector  config
+#  VARIANT: learning rate = 1e-7  (FLOAT32 BOUNDARY DEMONSTRATION)
+# ─────────────────────────────────────────────
+#  Purpose
+#  ───────
+#  Identical to default.yaml except both learning rates are forced to 1e-7,
+#  which sits right at the edge of float32 representability.
+#
+#  float32 machine epsilon = 2^-23 ≈ 1.19e-7.  This is the SMALLEST relative
+#  step that can change a float near 1.0.  So with lr = 1e-7:
+#    • Updates to weights of magnitude ~1.0 are ~1 ULP — barely registers,
+#      and often rounds away entirely.
+#    • Updates to weights of magnitude ~0.1 are ~13 ULP — they register, but
+#      learning is glacially slow and partially eaten by rounding noise.
+#  This is the practical floor: any lr below ~1e-7 increasingly degrades into
+#  "no learning" on float32.  Useful as the contrast case to 1e-15 (which is
+#  fully below the floor) and to the working default (1e-4 / 1e-5).
+#
+#  Run:
+#    python train.py --config configs/lr_1e-7.yaml
+# ─────────────────────────────────────────────
+
+model:
+  clip_model: "ViT-L-14-quickgelu"
+  feature_dim: 768
+  swin_window_size: 4
+  swin_depths: [2, 2, 6, 2]
+  swin_num_heads: [3, 6, 12, 24]
+  swin_embed_dim: 96
+  dropout: 0.3
+
+data:
+  image_size: 224
+  dfdc_root:        "datasets_eq/DFDC"
+  forensynths_root: "datasets_eq/ForenSynths"
+  genimage_root:    "datasets_eq/GenImage"
+  clip_cache_dir:   "datasets_eq/clip_cache"
+  max_samples_per_dataset: null
+  train_split: 0.8
+  num_workers: 0
+  augmentation:
+    random_flip: true
+    random_crop: true
+    jpeg_compression: true
+
+training:
+  batch_size: 8
+  accumulation_steps: 4
+  epochs: 100
+  early_stop_patience: 15
+  cnn_lr: 1.0e-7                 # << DEMONSTRATION: float32 boundary lr
+  backbone_lr: 1.0e-7           # << DEMONSTRATION: float32 boundary lr
+  weight_decay: 1.0e-4
+  focal_gamma: 2.0
+  scheduler: "cosine"
+  warmup_epochs: 5
+  gradient_clip: 1.0
+  use_amp: false
+  use_compile: false
+
+logging:
+  log_dir: "runs/"
+  save_dir: "checkpoints/lr_1e-7/"
+  save_every: 5
+  eval_every: 1

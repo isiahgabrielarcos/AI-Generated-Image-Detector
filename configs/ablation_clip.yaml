@@ -1,0 +1,61 @@
+# ─────────────────────────────────────────────
+#  Man & Cho (2026) – AIGC Detector  config
+# ─────────────────────────────────────────────
+
+model:
+  clip_model: "ViT-L/14"          # frozen CLIP backbone
+  feature_dim: 768                # shared embedding dimension
+  swin_window_size: 4             # window size for 16×16 feature grid
+  swin_depths: [2, 2, 6, 2]       # Swin-Tiny stage depths
+  swin_num_heads: [3, 6, 12, 24]  # Swin-Tiny heads per stage
+  swin_embed_dim: 96              # Swin-Tiny base channels
+  dropout: 0.1
+  ablation: "clip"  # Ours (Clip): CLIP only, no wavelet/SFDF
+
+data:
+  image_size: 224
+  # ── point these at your downloaded datasets ──────────────────────
+  dfdc_root:        "datasets/DFDC"
+  forensynths_root: "datasets/ForenSynths"
+  genimage_root:    "datasets/GenImage"
+  # ── CLIP feature cache (run cache_clip_features.py once first) ───
+  # Skips the frozen CLIP ViT every batch -> ~5-10x CPU speedup.
+  # Set to null to disable (computes CLIP live; very slow on CPU).
+  clip_cache_dir:   "datasets/clip_cache"
+  # ── Cap per-dataset sample count (null = use all) ────────────────
+  # e.g. set to 3340 for ~10 k total (1 000 iters/epoch on CPU, ~3× faster)
+  # null keeps full 30 k (3 000 iters/epoch); recommended: start with 3340 on CPU
+  max_samples_per_dataset: null
+  # ─────────────────────────────────────────────────────────────────
+  train_split: 0.8
+  num_workers: 0          # 0 on Windows/CPU (avoids subprocess overhead)
+  augmentation:
+    random_flip: true
+    random_crop: true
+    jpeg_compression: true      # augment with random JPEG quality 70-100
+
+training:
+  batch_size: 8                  # per-step; effective = batch_size x accumulation_steps
+  accumulation_steps: 4          # gradient accumulation -> effective batch = 32
+  epochs: 50                     # early stopping handles premature convergence
+  early_stop_patience: 10        # stop if val AUC flat for N epochs
+  cnn_lr: 1.0e-4                 # lightweight CNN branch
+  backbone_lr: 1.0e-5            # Swin backbone + CLIP projection adapter
+  weight_decay: 1.0e-4
+  focal_gamma: 2.0               # focal loss gamma
+  scheduler: "cosine"
+  warmup_epochs: 5
+  gradient_clip: 1.0
+  use_amp: false                 # bfloat16 autocast – DISABLED by default.
+                                 # On AMD CPUs without AVX-512 BF16, oneDNN routes ops
+                                 # through an Intel-optimised path that is SLOWER than
+                                 # plain FP32 on AMD hardware.  Enable only on Intel
+                                 # CPUs with VNNI / BF16 support (Alder Lake+, Ice Lake+).
+  use_compile: false             # torch.compile (adds ~5-10 min compile once, then
+                                 # ~20-50 % faster iterations).  Set true to enable.
+
+logging:
+  log_dir: "runs/"
+  save_dir: "checkpoints/"
+  save_every: 5                  # save checkpoint every N epochs
+  eval_every: 1

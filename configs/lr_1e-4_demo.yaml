@@ -1,0 +1,65 @@
+# ─────────────────────────────────────────────
+#  Man & Cho (2026) – AIGC Detector  config
+#  VARIANT: learning rate = 1e-4  (CONTROL for the 1e-15 demo)
+# ─────────────────────────────────────────────
+#  This file is BYTE-FOR-BYTE identical to configs/lr_1e-15.yaml except the
+#  two learning rates are 1e-4 instead of 1e-15.  Same dataset (ForenSynths
+#  only), same 3,340-image cap, same 3 epochs, same everything else.
+#
+#  Purpose: the controlled A/B partner to the 1e-15 run.  It demonstrates two
+#  things at once:
+#    1. The pipeline DOES learn at a sane lr — val AUC climbs well above 0.5,
+#       proving the 1e-15 flatline was caused by the learning rate, not a bug.
+#    2. It takes the SAME wall-clock time as the 1e-15 run — proving that a
+#       tiny learning rate does NOT make training "slower per step"; it just
+#       fails to converge.  Speed is independent of learning rate.
+#
+#  Run:
+#    python train.py --config configs/lr_1e-4_demo.yaml
+# ─────────────────────────────────────────────
+
+model:
+  clip_model: "ViT-L-14-quickgelu"
+  feature_dim: 768
+  swin_window_size: 4
+  swin_depths: [2, 2, 6, 2]
+  swin_num_heads: [3, 6, 12, 24]
+  swin_embed_dim: 96
+  dropout: 0.3
+
+data:
+  image_size: 224
+  # Same low-RAM single-dataset setup as the 1e-15 config (apples-to-apples).
+  dfdc_root:        "datasets_eq/_skip_for_demo"
+  forensynths_root: "datasets_eq/ForenSynths"
+  genimage_root:    "datasets_eq/_skip_for_demo"
+  clip_cache_dir:   "datasets_eq/clip_cache"
+  max_samples_per_dataset: 3340
+  train_split: 0.8
+  num_workers: 0
+  augmentation:
+    random_flip: true
+    random_crop: true
+    jpeg_compression: true
+
+training:
+  batch_size: 8
+  accumulation_steps: 4
+  epochs: 3                      # same as the 1e-15 run, for a fair time/curve comparison
+  early_stop_patience: 15
+  cnn_lr: 1.0e-4                 # << CONTROL: healthy learning rate
+  backbone_lr: 1.0e-4           # << CONTROL: healthy learning rate (matched to cnn_lr so the
+                                 #    ONLY difference vs lr_1e-15.yaml is the number itself)
+  weight_decay: 1.0e-4
+  focal_gamma: 2.0
+  scheduler: "cosine"
+  warmup_epochs: 5
+  gradient_clip: 1.0
+  use_amp: false
+  use_compile: false
+
+logging:
+  log_dir: "runs/"
+  save_dir: "checkpoints/lr_1e-4/"   # separate dir so it doesn't clobber the 1e-15 result
+  save_every: 5
+  eval_every: 1

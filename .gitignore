@@ -1,0 +1,31 @@
+# ── Secrets ───────────────────────────────────────────────────────────
+.env
+
+# ── Python ────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.eggs/
+dist/
+build/
+venv/
+.venv/
+
+# ── Training outputs ──────────────────────────────────────────────────
+runs/
+checkpoints/
+
+# ── Dataset downloads (large, not committed) ──────────────────────────
+datasets/_download_tmp/
+datasets/clip_cache/
+datasets
+datasets_eq
+node_modules
+per-gen-dataset
+per-gen-dataset-test
+
+
+# ── Misc ──────────────────────────────────────────────────────────────
+.DS_Store
+*.log
